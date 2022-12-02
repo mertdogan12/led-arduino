@@ -7,6 +7,10 @@ const char* ssid = SECRET_SSID;
 const char* password = SECRET_PASSWORD;
 WiFiServer server(80);
 
+IPAddress localIP(192, 168, 100, 2);
+IPAddress gateway(192, 168, 100, 1);
+IPAddress subnet(255, 255, 255, 0);
+
 WiFiUDP Udp;
 unsigned int localUdpPort = 1337;
 char incomingPacket[256];
@@ -16,6 +20,9 @@ void setup() {
   Serial.println();
 
   delay(10); 
+
+  if (!WiFi.config(localIP, gateway, subnet))
+    Serial.println("STA Failed to configure");
 
   Serial.print("Connecting to ");
   Serial.println(ssid); 
@@ -41,7 +48,7 @@ void loop() {
       incomingPacket[len] = '\0';
     }
 
-    Serial.printf("%s | %s\n", Udp.remoteIP().toString(), incomingPacket);
+    Serial.printf("%s | %s", Udp.remoteIP().toString().c_str(), incomingPacket);
   }
 }
 
